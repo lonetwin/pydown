@@ -2037,7 +2037,7 @@ class CoqLexer(RegexLexer):
         '<-', '=', '>', '>]', '>}', r'\?', r'\?\?', r'\[', r'\[<', r'\[>',
         r'\[\|', ']', '_', '`', '{', '{<', r'\|', r'\|]', '}', '~', '=>',
         r'/\\', r'\\/',
-        u'Π', u'λ',
+        'Π', 'λ',
     ]
     operators = r'[!$%&*+\./:<=>?@^|~-]'
     word_operators = ['and', 'asr', 'land', 'lor', 'lsl', 'lxor', 'mod', 'or']
@@ -2370,7 +2370,7 @@ class ElixirConsoleLexer(Lexer):
         insertions = []
         for match in line_re.finditer(text):
             line = match.group()
-            if line.startswith(u'** '):
+            if line.startswith('** '):
                 insertions.append((len(curcode),
                                    [(0, Generic.Error, line[:-1])]))
                 curcode += line[-1:]

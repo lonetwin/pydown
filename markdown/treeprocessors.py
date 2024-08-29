@@ -1,7 +1,7 @@
 import re
-import inlinepatterns
-import util
-import odict
+from . import inlinepatterns
+from . import util
+from . import odict
 
 
 def build_treeprocessors(md_instance, **kwargs):
@@ -15,7 +15,7 @@ def build_treeprocessors(md_instance, **kwargs):
 def isString(s):
     """ Check if it's string """
     if not isinstance(s, util.AtomicString):
-        return isinstance(s, basestring)
+        return isinstance(s, str)
     return False
 
 

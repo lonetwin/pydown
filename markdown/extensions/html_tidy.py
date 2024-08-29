@@ -60,7 +60,7 @@ class TidyProcessor(markdown.postprocessors.Postprocessor):
         # Pass text to Tidy. As Tidy does not accept unicode we need to encode
         # it and decode its return value.
         enc = self.markdown.tidy_options.get('char_encoding', 'utf8')
-        return unicode(tidy.parseString(text.encode(enc), 
+        return str(tidy.parseString(text.encode(enc), 
                                         **self.markdown.tidy_options),
                        encoding=enc) 
 

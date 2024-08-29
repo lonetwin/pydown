@@ -23,11 +23,11 @@ class Extension:
 
     def getConfigs(self):
         """ Return all configs settings as a dict. """
-        return dict([(key, self.getConfig(key)) for key in self.config.keys()])
+        return dict([(key, self.getConfig(key)) for key in list(self.config.keys())])
 
     def getConfigInfo(self):
         """ Return all config descriptions as a list of tuples. """
-        return [(key, self.config[key][1]) for key in self.config.keys()]
+        return [(key, self.config[key][1]) for key in list(self.config.keys())]
 
     def setConfig(self, key, value):
         """ Set a config setting for `key` with the given `value`. """
@@ -46,6 +46,6 @@ class Extension:
         * md_globals: Global variables in the markdown module namespace.
 
         """
-        raise NotImplementedError, 'Extension "%s.%s" must define an "extendMarkdown"' \
-            'method.' % (self.__class__.__module__, self.__class__.__name__)
+        raise NotImplementedError('Extension "%s.%s" must define an "extendMarkdown"' \
+            'method.' % (self.__class__.__module__, self.__class__.__name__))
 

@@ -41,10 +41,10 @@ So, we apply the expressions in the following order:
 * finally we apply strong and emphasis
 """
 
-import util
-import odict
+from . import util
+from . import odict
 import re
-from urlparse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 import sys
 # If you see an ImportError for htmlentitydefs after using 2to3 to convert for 
 # use by Python3, then you are probably using the buggy version from Python 3.0.
@@ -52,7 +52,7 @@ import sys
 # code on Python 3.0.  The following line should be converted by the tool to:
 # `from html import entities` and later calls to `htmlentitydefs` should be
 # changed to call `entities`. Python 3.1's tool does this but 3.0's does not.
-import htmlentitydefs
+import html.entities
 
 
 def build_inlinepatterns(md_instance, **kwargs):
@@ -441,7 +441,7 @@ class AutomailPattern(Pattern):
 
         def codepoint2name(code):
             """Return entity definition by code, or the code if not defined."""
-            entity = htmlentitydefs.codepoint2name.get(code)
+            entity = html.entities.codepoint2name.get(code)
             if entity:
                 return "%s%s;" % (util.AMP_SUBSTITUTE, entity)
             else:

@@ -37,14 +37,14 @@ import re
 import codecs
 import sys
 import logging
-import util
-from preprocessors import build_preprocessors
-from blockprocessors import build_block_parser
-from treeprocessors import build_treeprocessors
-from inlinepatterns import build_inlinepatterns
-from postprocessors import build_postprocessors
-from extensions import Extension
-from serializers import to_html_string, to_xhtml_string
+from . import util
+from .preprocessors import build_preprocessors
+from .blockprocessors import build_block_parser
+from .treeprocessors import build_treeprocessors
+from .inlinepatterns import build_inlinepatterns
+from .postprocessors import build_postprocessors
+from .extensions import Extension
+from .serializers import to_html_string, to_xhtml_string
 
 __all__ = ['Markdown', 'markdown', 'markdownFromFile']
 
@@ -110,7 +110,7 @@ class Markdown:
         pos = ['extensions', 'extension_configs', 'safe_mode', 'output_format']
         c = 0
         for arg in args:
-            if not kwargs.has_key(pos[c]):
+            if pos[c] not in kwargs:
                 kwargs[pos[c]] = arg
             c += 1
             if c == len(pos):
@@ -118,11 +118,11 @@ class Markdown:
                 break
 
         # Loop through kwargs and assign defaults
-        for option, default in self.option_defaults.items():
+        for option, default in list(self.option_defaults.items()):
             setattr(self, option, kwargs.get(option, default))
 
         self.safeMode = kwargs.get('safe_mode', False)
-        if self.safeMode and not kwargs.has_key('enable_attributes'):
+        if self.safeMode and 'enable_attributes' not in kwargs:
             # Disable attributes in safeMode when not explicitly set
             self.enable_attributes = False
 
@@ -160,7 +160,7 @@ class Markdown:
 
         """
         for ext in extensions:
-            if isinstance(ext, basestring):
+            if isinstance(ext, str):
                 ext = self.build_extension(ext, configs.get(ext, []))
             if isinstance(ext, Extension):
                 # might raise NotImplementedError, but that's the extension author's problem
@@ -209,8 +209,8 @@ class Markdown:
         # If the module is loaded successfully, we expect it to define a
         # function called makeExtension()
         try:
-            return module.makeExtension(configs.items())
-        except AttributeError, e:
+            return module.makeExtension(list(configs.items()))
+        except AttributeError as e:
             logger.warn("Failed to initiate extension '%s': %s" % (ext_name, e))
             return None
 
@@ -238,7 +238,7 @@ class Markdown:
             self.serializer = self.output_formats[format.lower()]
         except KeyError:
             raise KeyError('Invalid Output Format: "%s". Use one of %s.' \
-                               % (format, self.output_formats.keys()))
+                               % (format, list(self.output_formats.keys())))
         return self
 
     def convert(self, source):
@@ -265,11 +265,11 @@ class Markdown:
 
         # Fixup the source text
         if not source.strip():
-            return u""  # a blank unicode string
+            return ""  # a blank unicode string
 
         try:
-            source = unicode(source)
-        except UnicodeDecodeError, e:
+            source = str(source)
+        except UnicodeDecodeError as e:
             # Customise error message while maintaining original trackback
             e.reason += '. -- Note: Markdown only accepts unicode input!'
             raise
@@ -281,14 +281,14 @@ class Markdown:
 
         # Split into lines and run the line preprocessors.
         self.lines = source.split("\n")
-        for prep in self.preprocessors.values():
+        for prep in list(self.preprocessors.values()):
             self.lines = prep.run(self.lines)
 
         # Parse the high-level elements.
         root = self.parser.parseDocument(self.lines).getroot()
 
         # Run the tree-processors
-        for treeprocessor in self.treeprocessors.values():
+        for treeprocessor in list(self.treeprocessors.values()):
             newRoot = treeprocessor.run(root)
             if newRoot:
                 root = newRoot
@@ -309,7 +309,7 @@ class Markdown:
                     raise ValueError('Markdown failed to strip top-level tags. Document=%r' % output.strip())
 
         # Run the text post-processors
-        for pp in self.postprocessors.values():
+        for pp in list(self.postprocessors.values()):
             output = pp.run(output)
 
         return output.strip()
@@ -347,10 +347,10 @@ class Markdown:
             input_file.close()
         else:
             text = sys.stdin.read()
-            if not isinstance(text, unicode):
+            if not isinstance(text, str):
                 text = text.decode(encoding)
 
-        text = text.lstrip('\ufeff') # remove the byte-order mark
+        text = text.lstrip('\\ufeff') # remove the byte-order mark
 
         # Convert
         html = self.convert(text)
@@ -419,7 +419,7 @@ def markdownFromFile(*args, **kwargs):
     pos = ['input', 'output', 'extensions', 'encoding']
     c = 0
     for arg in args:
-        if not kwargs.has_key(pos[c]):
+        if pos[c] not in kwargs:
             kwargs[pos[c]] = arg
         c += 1
         if c == len(pos):

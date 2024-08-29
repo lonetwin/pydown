@@ -118,7 +118,7 @@ class TocTreeprocessor(markdown.treeprocessors.Treeprocessor):
             prettify = self.markdown.treeprocessors.get('prettify')
             if prettify: prettify.run(div)
             toc = self.markdown.serializer(div)
-            for pp in self.markdown.postprocessors.values():
+            for pp in list(self.markdown.postprocessors.values()):
                 toc = pp.run(toc)
             self.markdown.toc = toc
 

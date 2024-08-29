@@ -41,9 +41,9 @@ def _handle_key_value(s, t):
 
 def _handle_word(s, t):
     if t.startswith('.'):
-        return u'.', t[1:]
+        return '.', t[1:]
     if t.startswith('#'):
-        return u'id', t[1:]
+        return 'id', t[1:]
     return t, t
 
 _scanner = Scanner([
@@ -120,7 +120,7 @@ class AttrListTreeprocessor(markdown.treeprocessors.Treeprocessor):
 
 class AttrListExtension(markdown.extensions.Extension):
     def extendMarkdown(self, md, md_globals):
-        if 'headerid' in md.treeprocessors.keys():
+        if 'headerid' in list(md.treeprocessors.keys()):
             # insert after 'headerid' treeprocessor
             md.treeprocessors.add('attr_list', AttrListTreeprocessor(md), '>headerid')
         else:

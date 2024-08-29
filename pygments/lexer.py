@@ -42,7 +42,7 @@ class LexerMeta(type):
         return type.__new__(cls, name, bases, d)
 
 
-class Lexer(object):
+class Lexer(object, metaclass=LexerMeta):
     """
     Lexer for a specific language.
 
@@ -80,8 +80,6 @@ class Lexer(object):
 
     #: mime types
     mimetypes = []
-
-    __metaclass__ = LexerMeta
 
     def __init__(self, **options):
         self.options = options
@@ -133,12 +131,12 @@ class Lexer(object):
         Also preprocess the text, i.e. expand tabs and strip it if
         wanted and applies registered filters.
         """
-        if not isinstance(text, unicode):
+        if not isinstance(text, str):
             if self.encoding == 'guess':
                 try:
                     text = text.decode('utf-8')
-                    if text.startswith(u'\ufeff'):
-                        text = text[len(u'\ufeff'):]
+                    if text.startswith('\ufeff'):
+                        text = text[len('\ufeff'):]
                 except UnicodeDecodeError:
                     text = text.decode('latin1')
             elif self.encoding == 'chardet':
@@ -152,13 +150,13 @@ class Lexer(object):
                 decoded = None
                 for bom, encoding in _encoding_map:
                     if text.startswith(bom):
-                        decoded = unicode(text[len(bom):], encoding,
+                        decoded = str(text[len(bom):], encoding,
                                           errors='replace')
                         break
                 # no BOM found, so use chardet
                 if decoded is None:
                     enc = chardet.detect(text[:1024]) # Guess using first 1KB
-                    decoded = unicode(text, enc.get('encoding') or 'utf-8',
+                    decoded = str(text, enc.get('encoding') or 'utf-8',
                                       errors='replace')
                 text = decoded
             else:
@@ -433,7 +431,7 @@ class RegexLexerMeta(LexerMeta):
 
             try:
                 rex = cls._process_regex(tdef[0], rflags)
-            except Exception, err:
+            except Exception as err:
                 raise ValueError("uncompilable regex %r in state %r of %r: %s" %
                                  (tdef[0], state, cls, err))
 
@@ -452,7 +450,7 @@ class RegexLexerMeta(LexerMeta):
         """Preprocess a dictionary of token definitions."""
         processed = cls._all_tokens[name] = {}
         tokendefs = tokendefs or cls.tokens[name]
-        for state in tokendefs.keys():
+        for state in list(tokendefs.keys()):
             cls._process_state(tokendefs, processed, state)
         return processed
 
@@ -470,13 +468,12 @@ class RegexLexerMeta(LexerMeta):
         return type.__call__(cls, *args, **kwds)
 
 
-class RegexLexer(Lexer):
+class RegexLexer(Lexer, metaclass=RegexLexerMeta):
     """
     Base for simple stateful regular expression-based lexers.
     Simplifies the lexing process so that you need only
     provide a list of states and regular expressions.
     """
-    __metaclass__ = RegexLexerMeta
 
     #: Flags for compiling the regular expressions.
     #: Defaults to MULTILINE.
@@ -546,7 +543,7 @@ class RegexLexer(Lexer):
                         # at EOL, reset state to "root"
                         statestack = ['root']
                         statetokens = tokendefs['root']
-                        yield pos, Text, u'\n'
+                        yield pos, Text, '\n'
                         pos += 1
                         continue
                     yield pos, Error, text[pos]
@@ -625,7 +622,7 @@ class ExtendedRegexLexer(RegexLexer):
                         ctx.pos += 1
                         ctx.stack = ['root']
                         statetokens = tokendefs['root']
-                        yield ctx.pos, Text, u'\n'
+                        yield ctx.pos, Text, '\n'
                         continue
                     yield ctx.pos, Error, text[ctx.pos]
                     ctx.pos += 1
@@ -649,7 +646,7 @@ def do_insertions(insertions, tokens):
     """
     insertions = iter(insertions)
     try:
-        index, itokens = insertions.next()
+        index, itokens = next(insertions)
     except StopIteration:
         # no insertions
         for item in tokens:
@@ -675,7 +672,7 @@ def do_insertions(insertions, tokens):
                 realpos += len(it_value)
             oldi = index - i
             try:
-                index, itokens = insertions.next()
+                index, itokens = next(insertions)
             except StopIteration:
                 insleft = False
                 break  # not strictly necessary
@@ -690,7 +687,7 @@ def do_insertions(insertions, tokens):
             yield realpos, t, v
             realpos += len(v)
         try:
-            index, itokens = insertions.next()
+            index, itokens = next(insertions)
         except StopIteration:
             insleft = False
             break  # not strictly necessary

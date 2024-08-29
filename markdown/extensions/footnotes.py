@@ -119,7 +119,7 @@ class FootnoteExtension(markdown.Extension):
     def makeFootnotesDiv(self, root):
         """ Return div of footnotes as et Element. """
 
-        if not self.footnotes.keys():
+        if not list(self.footnotes.keys()):
             return None
 
         div = etree.Element("div")
@@ -127,7 +127,7 @@ class FootnoteExtension(markdown.Extension):
         hr = etree.SubElement(div, "hr")
         ol = etree.SubElement(div, "ol")
 
-        for id in self.footnotes.keys():
+        for id in list(self.footnotes.keys()):
             li = etree.SubElement(ol, "li")
             li.set("id", self.makeFootnoteId(id))
             self.parser.parseChunk(li, self.footnotes[id])
@@ -250,13 +250,13 @@ class FootnotePattern(markdown.inlinepatterns.Pattern):
 
     def handleMatch(self, m):
         id = m.group(2)
-        if id in self.footnotes.footnotes.keys():
+        if id in list(self.footnotes.footnotes.keys()):
             sup = etree.Element("sup")
             a = etree.SubElement(sup, "a")
             sup.set('id', self.footnotes.makeFootnoteRefId(id))
             a.set('href', '#' + self.footnotes.makeFootnoteId(id))
             a.set('rel', 'footnote')
-            a.text = unicode(self.footnotes.footnotes.index(id) + 1)
+            a.text = str(self.footnotes.footnotes.index(id) + 1)
             return sup
         else:
             return None

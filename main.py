@@ -59,7 +59,7 @@ def main():
     parser = optparse.OptionParser()
     (options, args) = parser.parse_args()
     if len(args) != 2:
-        print 'usage: pydown mdfile directory'
+        print('usage: pydown mdfile directory')
     else:
         handle(*args)
 

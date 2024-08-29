@@ -7,8 +7,8 @@ complicated.
 """
 
 import re
-import util
-import odict
+from . import util
+from . import odict
 
 
 def build_preprocessors(md_instance, **kwargs):
@@ -172,7 +172,7 @@ class HtmlBlockPreprocessor(Preprocessor):
 
                     if block.rstrip().endswith(">") \
                         and self._equal_tags(left_tag, right_tag):
-                        if self.markdown_in_raw and 'markdown' in attrs.keys():
+                        if self.markdown_in_raw and 'markdown' in list(attrs.keys()):
                             start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?', 
                                            '', block[:left_index])
                             end = block[-len(right_tag)-2:]
@@ -215,7 +215,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                         text.insert(0, block[data_index:])
 
                     in_tag = False
-                    if self.markdown_in_raw and 'markdown' in attrs.keys():
+                    if self.markdown_in_raw and 'markdown' in list(attrs.keys()):
                         start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?', 
                                        '', items[0][:left_index])
                         items[0] = items[0][left_index:]
@@ -232,7 +232,7 @@ class HtmlBlockPreprocessor(Preprocessor):
                     items = []
 
         if items:
-            if self.markdown_in_raw and 'markdown' in attrs.keys():
+            if self.markdown_in_raw and 'markdown' in list(attrs.keys()):
                 start = re.sub(r'\smarkdown(=[\'"]?[^> ]*[\'"]?)?', 
                                '', items[0][:left_index])
                 items[0] = items[0][left_index:]

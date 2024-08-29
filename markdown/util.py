@@ -2,7 +2,7 @@
 import re
 from logging import CRITICAL
 
-import etree_loader
+from . import etree_loader
 
 
 """
@@ -22,8 +22,8 @@ BLOCK_LEVEL_ELEMENTS = re.compile("^(p|div|h[1-6]|blockquote|pre|table|dl|ol|ul"
                                   "|figcaption|aside|article|canvas|output"
                                   "|progress|video)$")
 # Placeholders
-STX = u'\u0002'  # Use STX ("Start of text") for start-of-placeholder
-ETX = u'\u0003'  # Use ETX ("End of text") for end-of-placeholder
+STX = '\u0002'  # Use STX ("Start of text") for start-of-placeholder
+ETX = '\u0003'  # Use ETX ("End of text") for end-of-placeholder
 INLINE_PLACEHOLDER_PREFIX = STX+"klzzwxh:"
 INLINE_PLACEHOLDER = INLINE_PLACEHOLDER_PREFIX + "%s" + ETX
 INLINE_PLACEHOLDER_RE = re.compile(INLINE_PLACEHOLDER % r'([0-9]{4})')
@@ -34,11 +34,11 @@ Constants you probably do not need to change
 -----------------------------------------------------------------------------
 """
 
-RTL_BIDI_RANGES = ( (u'\u0590', u'\u07FF'),
+RTL_BIDI_RANGES = ( ('\u0590', '\u07FF'),
                      # Hebrew (0590-05FF), Arabic (0600-06FF),
                      # Syriac (0700-074F), Arabic supplement (0750-077F),
                      # Thaana (0780-07BF), Nko (07C0-07FF).
-                    (u'\u2D30', u'\u2D7F'), # Tifinagh
+                    ('\u2D30', '\u2D7F'), # Tifinagh
                     )
 
 # Extensions should use "markdown.util.etree" instead of "etree" (or do `from
@@ -54,7 +54,7 @@ AUXILIARY GLOBAL FUNCTIONS
 
 def isBlockLevel(tag):
     """Check if the tag is a block level HTML tag."""
-    if isinstance(tag, basestring):
+    if isinstance(tag, str):
         return BLOCK_LEVEL_ELEMENTS.match(tag)
     # Some ElementTree tags are not strings, so return False.
     return False
@@ -64,7 +64,7 @@ MISC AUXILIARY CLASSES
 =============================================================================
 """
 
-class AtomicString(unicode):
+class AtomicString(str):
     """A string which should not be further processed."""
     pass
 

@@ -14,8 +14,8 @@ as they need to alter how markdown blocks are parsed.
 
 import logging
 import re
-import util
-from blockparser import BlockParser
+from . import util
+from .blockparser import BlockParser
 
 logger =  logging.getLogger('MARKDOWN')
 

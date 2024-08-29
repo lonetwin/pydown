@@ -1,6 +1,6 @@
 
-import util
-import odict
+from . import util
+from . import odict
 
 class State(list):
     """ Track the current and nested state of the parser. 
@@ -89,7 +89,7 @@ class BlockParser:
 
         """
         while blocks:
-            for processor in self.blockprocessors.values():
+            for processor in list(self.blockprocessors.values()):
                 if processor.test(parent, blocks[0]):
                     if processor.run(parent, blocks) is not False:
                         # run returns True or None
